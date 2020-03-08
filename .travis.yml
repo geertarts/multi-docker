@@ -1,0 +1,24 @@
+sudo: required
+services:
+  - docker
+  
+before_install:
+    - docker build -t gerioo/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+      - docker run gerioo/react-test npm test --  --coverage    
+    
+after_success:
+  - docker build -t gerioo/multi-client ./client
+  - docker build -t gerioo/multi-nginx ./nginx
+  - docker build -t gerioo/multi-server ./server
+  - docker build -t gerioo/multi-worker ./worker
+
+  # Log in to the docker CLI
+  - echo "$DOCKER_PASWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  # Take those images ant push them to docker hub
+  - docker push gerioo/multi-client
+  - docker push gerioo/multi-nginx
+  - docker push gerioo/multi-server
+  - docker push gerioo/multi-worker
+  
