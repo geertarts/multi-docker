@@ -16,9 +16,24 @@ after_success:
 
   # Log in to the docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-  # Take those images ant push them to docker hub
+  # Take those images and push them to docker hub
   - docker push gerioo/multi-client
   - docker push gerioo/multi-nginx
   - docker push gerioo/multi-server
   - docker push gerioo/multi-worker
+  
+deploy:
+  edge: true
+  provider: elasticbeanstalk
+  region: eu-central-1
+  app: multi-docker
+  env: MultiDocker-env
+  bucket_name: elasticbeanstalk-eu-central-1-379644753186
+  bucket_path: docker-multi
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_acess_key: $AWS_SECRET_KEY
+        
+  
   
